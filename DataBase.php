@@ -122,6 +122,28 @@ function insertData($table, $scannedCode, $itemDescription, $dateAcquired, $item
         return false;
     }
 }
+ function fetchData($table)
+    {
+        $table = $this->prepareData($table);
+        $this->sql = "SELECT * FROM " . $table;
+        $result = mysqli_query($this->connect, $this->sql);
+
+        $data = array(); // Initialize an array to hold fetched data
+
+        if (mysqli_num_rows($result) > 0) {
+            // Loop through each row of the result set
+            while ($row = mysqli_fetch_assoc($result)) {
+                // Add each row to the data array
+                $data[] = $row;
+            }
+        }
+
+        return $data;
+    }
+
+    // Additional methods (fetchIPAddress, getUserData, etc.) if needed
+
+    
 
 
 
