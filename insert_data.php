@@ -1,5 +1,4 @@
 <?php
-
 require "DataBase.php";
 $db = new DataBase();
 
@@ -32,28 +31,43 @@ if (
         $sourceFund = $db->prepareData($_POST['SourceFund']);
         $supplier = $db->prepareData($_POST['Supplier']);
 
+        // Define the absolute server file path to store the uploaded images
+        $uploadDirectory = 'item_images/'; // Change this to your desired image directory
+        $imageFileName = $scannedCode . '.jpg'; // Rename the image based on the scanned code
+        $uploadPath = $uploadDirectory . $imageFileName;
+
         // Convert image data from base64 to binary
         $imageData = base64_decode($_POST['Image']);
 
-        // Adjust the insertData function to handle additional fields
-        if ($db->insertData(
-            "properties",
-            $scannedCode,
-            $itemDescription,
-            $dateAcquired,
-            $itemCost,
-            $itemQuantity, // Insert item quantity into the database
-            $category,
-            $status,
-            $whereabout,
-            $imageData, // Pass image data directly
-            $supplier,
-            $unit,
-            $sourceFund
-        )) {
-            echo json_encode(array("success" => true, "message" => "Data inserted successfully"));
+        // Save the image to the server
+        if (file_put_contents($uploadPath, $imageData)) {
+            // Image saved successfully
+            // Now, you can insert the item data and image path into your MySQL database
+            $imagePath = $uploadPath; // Set the image path to be stored in the database
+
+            // Adjust the insertData function to handle additional fields
+            if ($db->insertData(
+                "properties",
+                $scannedCode,
+                $itemDescription,
+                $dateAcquired,
+                $itemCost,
+                $itemQuantity, // Insert item quantity into the database
+                $category,
+                $status,
+                $whereabout,
+                $imagePath, // Pass image path instead of image data
+                $supplier,
+                $unit,
+                $sourceFund
+            )) {
+                echo json_encode(array("success" => true, "message" => "Data inserted successfully"));
+            } else {
+                echo json_encode(array("success" => false, "message" => "Error: Failed to insert data"));
+            }
         } else {
-            echo json_encode(array("success" => false, "message" => "Error: Failed to insert data"));
+            // Handle image upload error
+            echo json_encode(array("success" => false, "message" => "Error uploading image."));
         }
     } else {
         echo json_encode(array("success" => false, "message" => "Error: Database connection"));
@@ -62,3 +76,4 @@ if (
     echo json_encode(array("success" => false, "message" => "Incomplete data"));
 }
 ?>
+    

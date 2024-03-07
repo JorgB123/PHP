@@ -1,31 +1,29 @@
 <?php
+require "DataBase.php"; // Include the file where the database connection is established
 
+$db = new DataBase();
+$conn = $db->dbConnect(); // Establish the database connection
 
-include('Database.php');
+if ($conn) { // Check if the connection is successful
+    $stmt = $conn->prepare("SELECT Description, StockAvailable, Image FROM properties");
 
-$stmt = $conn->prepare("SELECT Description, StockAvailable, Image FROM properties");
+    $stmt->execute();
+    $stmt->bind_result($description, $stockAvailable, $image);
 
-$stmt ->execute();
-$stmt -> bind_result($description, $stockAvailable, $image);
+    $itemList = array();
 
-$itemList = array();
+    while ($stmt->fetch()) {
+        $temp = array();
 
-while($stmt ->fetch()){
+        $temp['Description'] = $description;
+        $temp['StockAvailable'] = $stockAvailable;
+        $temp['Image'] = $image;
 
-	$temp = array();
+        array_push($itemList, $temp);
+    }
 
-	
-	$temp['Description'] = $description
-	$temp['StockAvailable'] = $stockAvailable
-	$temp['Image'] = $image
-
-
-	array_push($itemList, $temp);
-	}
-
-	echo json_encode($itemList);
-
+    echo json_encode($itemList);
+} else {
+    echo json_encode(array("success" => false, "message" => "Error: Database connection"));
+}
 ?>
-
-
-

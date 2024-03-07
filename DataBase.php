@@ -59,6 +59,32 @@ class DataBase
 
     return $login;
 }
+function AdminlogIn($table, $Email, $Password)
+{
+    $table = $this->prepareData($table);
+    $Email = $this->prepareData($Email);
+    $Password = $this->prepareData($Password);
+    $this->sql = "SELECT * FROM " . $table . " WHERE Email = '" . $Email . "'";
+    $result = mysqli_query($this->connect, $this->sql);
+    
+    if (mysqli_num_rows($result) != 0) {
+        $row = mysqli_fetch_assoc($result);
+        $dbEmail = $row['Email'];
+        $dbPassword = $row['Password'];
+
+        // Use password_verify to check if the entered password matches the hashed password
+        if ($dbEmail == $Email) {
+            $login = true;
+        } else {
+            $login = false;
+        }
+    } else {
+        $login = false;
+    }
+
+    return $login;
+}
+
 
 
    function signUp($table, $Email, $Password)
@@ -87,7 +113,7 @@ class DataBase
 }
 
 
-function insertData($table, $scannedCode, $itemDescription, $dateAcquired, $itemCost, $itemQuantity, $category, $status, $whereabout, $imageData, $supplier, $unit, $sourceFund)
+function insertData($table, $scannedCode, $itemDescription, $dateAcquired, $itemCost, $itemQuantity, $category, $status, $whereabout, $imagePath, $supplier, $unit, $sourceFund)
 {
     // Prepare data
     $table = $this->prepareData($table);
@@ -103,15 +129,12 @@ function insertData($table, $scannedCode, $itemDescription, $dateAcquired, $item
     $unit = $this->prepareData($unit);
     $sourceFund = $this->prepareData($sourceFund);
     
-    // Convert image data from base64 to binary
-    $imageData = base64_decode($imageData);
-
     // Construct SQL query
     $sql = "INSERT INTO " . $table . " (PropertyNumber, Description, DateAcquired, UnitCost, StockAvailable, Particular, PropertyStatus, WhereAbout, Image, Supplier, Unit, SourceFund) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     // Prepare and bind parameters
     $stmt = $this->connect->prepare($sql);
-    $stmt->bind_param("ssssssssssss", $scannedCode, $itemDescription, $dateAcquired, $itemCost, $itemQuantity, $category, $status, $whereabout, $imageData, $supplier, $unit, $sourceFund);
+    $stmt->bind_param("ssssssssssss", $scannedCode, $itemDescription, $dateAcquired, $itemCost, $itemQuantity, $category, $status, $whereabout, $imagePath, $supplier, $unit, $sourceFund);
 
     // Execute statement
     if ($stmt->execute()) { 
@@ -122,6 +145,7 @@ function insertData($table, $scannedCode, $itemDescription, $dateAcquired, $item
         return false;
     }
 }
+
  function fetchData($table)
     {
         $table = $this->prepareData($table);
