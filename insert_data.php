@@ -43,7 +43,7 @@ if (
         if (file_put_contents($uploadPath, $imageData)) {
             // Image saved successfully
             // Now, you can insert the item data and image path into your MySQL database
-            $imagePath = $uploadPath; // Set the image path to be stored in the database
+            $imagePath = 'http://192.168.1.14/' . $uploadPath; // Construct full image path
 
             // Adjust the insertData function to handle additional fields
             if ($db->insertData(
@@ -76,4 +76,3 @@ if (
     echo json_encode(array("success" => false, "message" => "Incomplete data"));
 }
 ?>
-    
