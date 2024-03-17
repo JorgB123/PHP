@@ -87,23 +87,28 @@ function AdminlogIn($table, $Email, $Password)
 
 
 
-   function signUp($table, $Email, $Password)
+   function signUp($table, $Email, $Password, $Firstname, $Lastname, $Department, $Role, $ImagePath)
 {
     $Email = $this->prepareData($Email);
     $Password = $this->prepareData($Password);
+    $Firstname = $this->prepareData($Firstname);
+    $Lastname = $this->prepareData($Lastname);
+    $Department = $this->prepareData($Department);
+    $Role = $this->prepareData($Role);
+    $ImagePath = $this->prepareData($ImagePath); // No need for prepareData, but ensure it's correctly formatted
     $hashedPassword = password_hash($Password, PASSWORD_DEFAULT);
 
-    // Check if the username already exists
-    $checkUsernameQuery = "SELECT * FROM " . $table . " WHERE Email = '" . $Email . "'";
-    $result = mysqli_query($this->connect, $checkUsernameQuery);
+    // Check if the email already exists
+    $checkEmailQuery = "SELECT * FROM " . $table . " WHERE Email = '" . $Email . "'";
+    $result = mysqli_query($this->connect, $checkEmailQuery);
 
     if (mysqli_num_rows($result) > 0) {
-        // Username already exists, return false
+        // Email already exists, return false
         return false;
     }
 
-    // Username doesn't exist, proceed with insertion
-    $this->sql = "INSERT INTO " . $table . " (Email, Password) VALUES ('" . $Email . "','" . $hashedPassword . "')";
+    // Email doesn't exist, proceed with insertion
+    $this->sql = "INSERT INTO " . $table . " (Email, Password, FirstName, LastName, Department, Role, image) VALUES ('" . $Email . "','" . $hashedPassword . "','" . $Firstname . "','" . $Lastname . "','" . $Department . "','" . $Role . "','" . $ImagePath . "')";
 
     if (mysqli_query($this->connect, $this->sql)) {
         return true;
@@ -111,6 +116,7 @@ function AdminlogIn($table, $Email, $Password)
         return false;
     }
 }
+
 
 
 function insertData($table, $scannedCode, $itemDescription, $dateAcquired, $itemCost, $itemQuantity, $category, $status, $whereabout, $imagePath, $supplier, $unit, $sourceFund)
@@ -145,6 +151,8 @@ function insertData($table, $scannedCode, $itemDescription, $dateAcquired, $item
         return false;
     }
 }
+
+
 
  function fetchData($table)
     {

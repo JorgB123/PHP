@@ -33,17 +33,25 @@ if (
 
         // Define the absolute server file path to store the uploaded images
         $uploadDirectory = 'item_images/'; // Change this to your desired image directory
-        $imageFileName = $scannedCode . '.jpg'; // Rename the image based on the scanned code
-        $uploadPath = $uploadDirectory . $imageFileName;
 
-        // Convert image data from base64 to binary
+        // Get the original filename and extension
         $imageData = base64_decode($_POST['Image']);
+        $finfo = finfo_open();
+        $mime_type = finfo_buffer($finfo, $imageData, FILEINFO_MIME_TYPE);
+        finfo_close($finfo);
+        $extension = explode('/', $mime_type)[1];
+
+        // Rename the image based on the scanned code and its original extension
+        $imageFileName = $scannedCode . '.' . $extension;
+
+        // Define the upload path
+        $uploadPath = $uploadDirectory . $imageFileName;
 
         // Save the image to the server
         if (file_put_contents($uploadPath, $imageData)) {
             // Image saved successfully
             // Now, you can insert the item data and image path into your MySQL database
-            $imagePath = 'http://192.168.1.14/' . $uploadPath; // Construct full image path
+            //$imagePath = 'http://192.168.1.14/' . $uploadPath; // Construct full image path
 
             // Adjust the insertData function to handle additional fields
             if ($db->insertData(
@@ -56,7 +64,7 @@ if (
                 $category,
                 $status,
                 $whereabout,
-                $imagePath, // Pass image path instead of image data
+                $uploadPath, // Pass image path instead of image data
                 $supplier,
                 $unit,
                 $sourceFund

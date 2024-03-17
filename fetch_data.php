@@ -17,7 +17,15 @@ if ($db->dbConnect()) {
             $filteredRow = array(
                 "Description" => $row["Description"],
                 "StockAvailable" => $row["StockAvailable"],
-                "Image" => base64_encode($row["Image"])
+                "Image" => base64_encode($row["Image"]),
+                'PropertyNumber' => $row['PropertyNumber'],
+                'DateAcquired' => $row['DateAcquired'],
+                'Unit' => $row['Unit'],
+                'UnitCost' => $row['UnitCost'],
+                'Supplier' => $row['Supplier'],
+                'Particular' => $row['Particular'],
+                'PropertyStatus' => $row['PropertyStatus'],
+                'SourceFund' => $row['SourceFund']
             );
 
             // Add filtered row to filtered data array
